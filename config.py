@@ -21,7 +21,7 @@ USE_WEBHOOK = False
 WEBHOOK_PORT = int(os.getenv("WEBHOOK_PORT", "8080"))
 
 # Public HTTPS URL for webhook delivery (Render app URL)
-WEBHOOK_URL = os.getenv("WEBHOOK_URL", "https://your-app.onrender.com/webhook")
+WEBHOOK_URL = os.getenv("WEBHOOK_URL", "https://karisfare-bot.onrender.com/webhook/9097468849___")
 
 # Bot name displayed in the terminal dashboard
 BOT_NAME = "Terminal Bot"

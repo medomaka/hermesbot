@@ -20,6 +20,9 @@ USE_WEBHOOK = False
 # Port for the webhook server (for local webhook mode)
 WEBHOOK_PORT = int(os.getenv("WEBHOOK_PORT", "8080"))
 
+# Public HTTPS URL for webhook delivery (Render app URL)
+WEBHOOK_URL = os.getenv("WEBHOOK_URL", "https://your-app.onrender.com/webhook")
+
 # Bot name displayed in the terminal dashboard
 BOT_NAME = "Terminal Bot"
 BOT_VERSION = "1.0.0"

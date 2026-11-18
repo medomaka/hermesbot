@@ -196,9 +196,9 @@ def build_app() -> Application:
     for name, fn in router.commands.items():
         # Router handlers take (context: dict), but Telegram's CommandHandler
         # expects (update, context). Create a wrapper.
-        def make_wrapper(fn):
+        def make_wrapper(handler):
             async def wrapper(update, context):
-                return await fn(context)
+                return await handler(context)
             return wrapper
         app.add_handler(CommandHandler(name, make_wrapper(fn)))
 
@@ -211,10 +211,33 @@ def build_app() -> Application:
     return app
 
 
-# ---- Entry point ----
 if __name__ == "__main__":
-    from config import TELEGRAM_TOKEN, WEBHOOK_PORT
-    app = build_app()
-    # Local development: use polling (standard mode).
-    # For production deployment, switch to run_webhook() with a public HTTPS URL.
-    app.run_polling()
+    # Start in webhook mode (recommended for Render deployment)
+    # Webhooks push updates to your server instead of polling
+    app = Application.builder().token(TELEGRAM_TOKEN).build()
+
+    # Command handlers - wrap router handlers to match Telegram's signature
+    for name, fn in router.commands.items():
+        # Router handlers take (context: dict), but Telegram's CommandHandler
+        # expects (update, context). Create a wrapper.
+        def make_wrapper(handler):
+            async def wrapper(update, context):
+                return await handler(context)
+            return wrapper
+        app.add_handler(CommandHandler(name, make_wrapper(fn)))
+
+    # Callback handler
+    app.add_handler(CallbackQueryHandler(handle_callback, pattern=".+"))
+
+    # Message handler
+    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_text))
+
+    # Start in webhook mode (recommended for Render deployment)
+    # Webhooks push updates to your server instead of polling
+    app.run_webhook(
+        listen="0.0.0.0",
+        port=WEBHOOK_PORT,
+        url_path=f"/webhook/{TELEGRAM_TOKEN.replace(':', '_')}",
+        webhook_url=WEBHOOK_URL,
+        drop_pending_updates=True,
+    )

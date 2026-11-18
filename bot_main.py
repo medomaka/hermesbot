@@ -22,7 +22,7 @@ if HERE not in sys.path:
     sys.path.insert(0, HERE)
 
 # Bot configuration (token, webhook port, etc.)
-from config import TELEGRAM_TOKEN, WEBHOOK_PORT
+from config import TELEGRAM_TOKEN, WEBHOOK_PORT, WEBHOOK_URL
 
 from telegram import Update
 from telegram.ext import (

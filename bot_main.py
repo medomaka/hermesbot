@@ -49,6 +49,14 @@ call_transport = None
 # ---- Command handlers ----
 @router.command("start", help_text="/start — start the bot and show the dashboard")
 async def cmd_start(context: dict) -> str:
+    """Show the terminal dashboard (checks session state first)."""
+    # Check if there's an active session
+    if calls.active:
+        if context.get("message"):
+            await context.get("message").reply_text(
+                "Agent is running - /sessions can't run mid-turn. Wait for the current response or /stop first."
+            )
+        return "ok"
     msg = context.get("message")
     if msg:
         await msg.reply_text(
@@ -144,18 +152,6 @@ async def cmd_stop(context: dict) -> str:
     calls.user_id = 0
     if context.get("message"):
         await context.get("message").reply_text("Session cancelled. Ready for a new session.")
-    return "ok"
-
-
-@router.command("start", help_text="/start — start the bot and show the dashboard")
-async def cmd_start(context: dict) -> str:
-    msg = context.get("message")
-    if msg:
-        await msg.reply_text(
-            "Terminal Dashboard",
-            reply_markup=dash.build()["keyboard"],
-            parse_mode="MarkdownV2",
-        )
     return "ok"
 
 

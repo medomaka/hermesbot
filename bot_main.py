@@ -134,6 +134,31 @@ async def cmd_clear(context: dict) -> str:
     return "ok"
 
 
+# ---- Session management commands ----
+@router.command("stop", help_text="/stop — cancel active session and stop the agent")
+async def cmd_stop(context: dict) -> str:
+    """Cancel the active session and reset the agent state."""
+    global calls
+    # Reset session state
+    calls.active = False
+    calls.user_id = 0
+    if context.get("message"):
+        await context.get("message").reply_text("Session cancelled. Ready for a new session.")
+    return "ok"
+
+
+@router.command("start", help_text="/start — start the bot and show the dashboard")
+async def cmd_start(context: dict) -> str:
+    msg = context.get("message")
+    if msg:
+        await msg.reply_text(
+            "Terminal Dashboard",
+            reply_markup=dash.build()["keyboard"],
+            parse_mode="MarkdownV2",
+        )
+    return "ok"
+
+
 # ---- Callback router ----
 @router.callback_handler
 async def handle_callback(data: dict, context: dict) -> str:
